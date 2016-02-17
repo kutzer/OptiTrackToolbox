@@ -7,7 +7,7 @@ function OptiTrackToolboxUpdate
 % TODO - update function for general operation
 
 %% Check current version
-A = ScorVer;
+A = OptiTrackToolboxVer;
 
 %% Setup temporary file directory
 fprintf('Downloading the OptiTrack Toolbox...');
