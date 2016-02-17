@@ -215,11 +215,6 @@ classdef OptiTrack < matlab.mixin.SetGet % Handle
                 rigidBodySettings(i).DisplayName = rigidBody(i).Name;
                 rigidBodySettings(i).Color = 'b';
             end
-            % Return empty set if no rigid bodies exist
-            if ~exist('rigidBodySettings','var')
-                rigidBodySettings(1).DisplayName = [];
-                rigidBodySettings(1).Color = [];
-            end
             % Update rigid body settings
             obj.RigidBodySettings = rigidBodySettings;
             
