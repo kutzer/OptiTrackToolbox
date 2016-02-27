@@ -19,6 +19,10 @@ function installOptiTrackToolbox(replaceExisting)
 % TODO - Allow users to create a local version if admin rights are not
 % possible.
 
+%% Install/Update required toolboxes
+ToolboxUpdate('Transformation');
+ToolboxUpdate('Plotting');
+
 %% Assign tool/toolbox specific parameters
 dirName = 'optitrack';
 
@@ -166,3 +170,65 @@ savepath;
 fprintf('Rehashing Toolbox Cache...');
 rehash TOOLBOXCACHE
 fprintf('[Complete]\n');
+
+end
+
+function ToolboxUpdate(toolboxName)
+
+%% Setup functions
+ToolboxVer = str2func( sprintf('%sToolboxVer',toolboxName) );
+installToolbox = str2func( sprintf('install%sToolbox',toolboxName) );
+
+%% Check current version
+try
+    A = ToolboxVer;
+catch ME
+    A = [];
+    fprintf('No previous version of %s detected.\n',toolboxName);
+end
+
+%% Setup temporary file directory
+fprintf('Downloading the %s Toolbox...',toolboxName);
+tmpFolder = sprintf('%sToolbox',toolboxName);
+pname = fullfile(tempdir,tmpFolder);
+
+%% Download and unzip toolbox (GitHub)
+url = sprintf('https://github.com/kutzer/%sToolbox/archive/master.zip',toolboxName);
+try
+    fnames = unzip(url,pname);
+    fprintf('SUCCESS\n');
+    confirm = true;
+catch
+    confirm = false;
+end
+
+%% Check for successful download
+if ~confirm
+    error('InstallToolbox:FailedDownload','Failed to download updated version of %s Toolbox.',toolboxName);
+end
+
+%% Find base directory
+install_pos = strfind(fnames, sprintf('install%sToolbox.m',toolboxName) );
+sIdx = cell2mat( install_pos );
+cIdx = ~cell2mat( cellfun(@isempty,install_pos,'UniformOutput',0) );
+
+pname_star = fnames{cIdx}(1:sIdx-1);
+
+%% Get current directory and temporarily change path
+cpath = cd;
+cd(pname_star);
+
+%% Install ScorBot Toolbox
+installToolbox(true);
+
+%% Move back to current directory and remove temp file
+cd(cpath);
+[ok,msg] = rmdir(pname,'s');
+if ~ok
+    warning('Unable to remove temporary download folder. %s',msg);
+end
+
+%% Complete installation
+fprintf('Installation complete.\n');
+
+end

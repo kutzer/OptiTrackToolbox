@@ -1,37 +1,47 @@
 function OptiTrackToolboxUpdate
 % OPTITRACKTOOLBOXUPDATE download and update the OptiTrack Toolbox. 
 %
-%   M. Kutzer 17Feb2016, USNA
+%   M. Kutzer 27Feb2016, USNA
 
 % TODO - Find a location for "OptiTrackToolbox Example SCRIPTS"
 % TODO - update function for general operation
 
+% Install OptiTrack Toolbox
+ToolboxUpdate('OptiTrack');
+
+end
+
+function ToolboxUpdate(toolboxName)
+
+%% Setup functions
+ToolboxVer = str2func( sprintf('%sToolboxVer',toolboxName) );
+installToolbox = str2func( sprintf('install%sToolbox',toolboxName) );
+
 %% Check current version
-A = OptiTrackToolboxVer;
+A = ToolboxVer;
 
 %% Setup temporary file directory
-fprintf('Downloading the OptiTrack Toolbox...');
-tmpFolder = 'OptiTrackToolbox';
+fprintf('Downloading the %s Toolbox...',toolboxName);
+tmpFolder = sprintf('%sToolbox',toolboxName);
 pname = fullfile(tempdir,tmpFolder);
 
 %% Download and unzip toolbox (GitHub)
-url = 'https://github.com/kutzer/OptiTrackToolbox/archive/master.zip';
+url = sprintf('https://github.com/kutzer/%sToolbox/archive/master.zip',toolboxName);
 try
     fnames = unzip(url,pname);
     fprintf('SUCCESS\n');
     confirm = true;
 catch
     confirm = false;
-    return
 end
 
 %% Check for successful download
 if ~confirm
-    error('Failed to download updated version of OptiTrack Toolbox.');
+    error('InstallToolbox:FailedDownload','Failed to download updated version of %s Toolbox.',toolboxName);
 end
 
 %% Find base directory
-install_pos = strfind(fnames,'installOptiTrackToolbox.m');
+install_pos = strfind(fnames, sprintf('install%sToolbox.m',toolboxName) );
 sIdx = cell2mat( install_pos );
 cIdx = ~cell2mat( cellfun(@isempty,install_pos,'UniformOutput',0) );
 
@@ -42,7 +52,7 @@ cpath = cd;
 cd(pname_star);
 
 %% Install ScorBot Toolbox
-installOptiTrackToolbox(true);
+installToolbox(true);
 
 %% Move back to current directory and remove temp file
 cd(cpath);
