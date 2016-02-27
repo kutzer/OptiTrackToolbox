@@ -60,6 +60,7 @@ if isToolbox == 7
         case 'Yes'
             % TODO - check if NatNet SDK components are running and close
             % them prior to removing directory
+            rmpath(toolboxRoot);
             [isRemoved, msg, msgID] = rmdir(toolboxRoot,'s');
             if isRemoved
                 fprintf('Previous version of OptiTrack Toolbox removed successfully.\n');
