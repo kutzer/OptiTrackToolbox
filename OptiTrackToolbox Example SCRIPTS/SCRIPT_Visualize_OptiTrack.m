@@ -26,7 +26,7 @@ zlabel(axs,'z (mm)');
 % Update limits to match tracking volume
 %   Note: These will change based on setup and definition of the ground
 %   plane in tracking software.
-xx = [-5200, 6000]; % (mm)
+xx = [-5400, 6200]; % (mm)
 yy = [    0, 3200]; % (mm), Floor to ceiling
 zz = [-3500, 3500]; % (mm)
 set(axs,'xlim',xx,'ylim',yy,'zlim',zz);
