@@ -1,4 +1,5 @@
 function HgOffset = getFrameOffset(MarkerPosition,MarkerDesignPosition)
+% THIS PROJECT IS STILL A WORK IN PROGRESS
 
 q = MarkerPosition;
 p = MarkerDesignPosition;

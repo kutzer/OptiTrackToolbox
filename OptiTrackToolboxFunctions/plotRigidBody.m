@@ -1,10 +1,61 @@
 function hg = plotRigidBody(varargin)
-% plotRigidBody
-%   plotRigidBody(RigidBody)
-%   plotRigidBody(RigidBody, RigidBodySettings)
-%   plotRigidBody(axs,___)
+% PLOTRIGIDBODY create a visualization of an OptiTrack rigid body.
+%   hg = PLOTRIGIDBODY(RigidBody) returns a handle (or handles) to an  
+%   hgtransform object with children visualzing the markers and reference
+%   frame of an OptiTrack rigid body. 
 %
+%   Note: "RigidBody" must be a 1xN structured array property of the 
+%   OptiTrack class.
+%
+%   PLOTRIGIDBODY(RigidBody, RigidBodySettings) returns a handle (or  
+%   handles) to an hgtransform object with children visualzing the markers 
+%   and reference frame of an OptiTrack rigid body. RigidBodySettings is
+%   used to specify marker color and tag each graphics object assoiciated 
+%   with the rigid body.
+%
+%   Note: "RigidBodySettings" must be a 1xN structured array property of  
+%   the OptiTrack class.
+%
+%   PLOTRIGIDBODY(axs,___) specify the parent axes of the visualization.
+%
+%   Example:
+%       % Create and initialize OptiTrack object
+%       OTobj = OptiTrack;
+%       OTobj.Initialize;
+%       % Create figure and axes (downward looking FOV)
+%       fig = figure('Name','OptiTrack Object Example');
+%       axs = axes('Parent',fig,'DataAspectRatioMode','manual',...
+%           'DataAspectRatio',[1 1 1],'NextPlot','add','View',[180,0]);
+%       % Plot rigid bodies
+%       hg = plotRigidBody(axs,OTobj.RigidBody);
+%       % Visualize rigid body movements
+%       while true
+%           % Exit loop when figure is closed
+%           if ~ishandle(fig)
+%               break
+%           end
+%           % Get current rigid body information
+%           rb = OTobj.RigidBody;
+%           % Update each rigid body 
+%           for i = 1:numel(rb)
+%               if rb(i).isTracked
+%                   % Update rigid body pose if it is tracked
+%                   set(hg(i),'Matrix',rb(i).HgTransform,'Visible','On');
+%               else
+%                   % Make visualization invisible if rigid body is not
+%                   % tracked
+%                   set(hg(i),'Visible','Off');
+%               end
+%           end
+%           drawnow
+%       end
+%
+%   See also OptiTrack triad hgtransform
+%   
 %   M. Kutzer 20Jan2016, USNA
+
+% Upates:
+%   10Mar2016 - Documentation update and added example
 
 %% Parse inputs
 narginchk(1,3);
@@ -40,8 +91,10 @@ else
 end
 
 %% Create plot
-% Create invisible figure
-fig = figure('Visible','On');
+% Create temporary invisible figure
+%   Note: This is a quick workaround for determining the proper scale of
+%   the reference frame for the rigid body.
+fig = figure('Visible','Off');
 axs = axes('Parent',fig,'NextPlot','add','DataAspectRatio',[1 1 1]);
 view(axs,3);
 % Define unit sphere surface coordinates
@@ -60,20 +113,20 @@ for i = 1:numel(rigidBody)
     tag = rbSettings(i).DisplayName;
     color = rbSettings(i).Color;
     
+    % Plot markers
     n = numel(mSze);
     for j = 1:n
         ptch(j) = patch(surf2patch(...
             (mSze(j)/2)*X + repmat(mPos(1,j),size(X)),...
             (mSze(j)/2)*Y + repmat(mPos(2,j),size(Y)),...
             (mSze(j)/2)*Z + repmat(mPos(3,j),size(Z))),...
-            'FaceColor',color,'EdgeColor','None');
+            'FaceColor',color,'EdgeColor','None','Parent',axs);
         set(ptch(j),'Tag',sprintf('%s, Marker %d',tag,j));
     end
     
+    % Determine reference frame scale
     lims = [xlim(axs); ylim(axs); zlim(axs)];
     scle = max( lims(:,2) - lims(:,1) );
-    
-    ishandle(axsOut)
     
     % Create triad
     hg(i) = triad('Parent',axsOut,'Scale',1.2*scle,'LineWidth',2,...
@@ -81,4 +134,5 @@ for i = 1:numel(rigidBody)
     % Set markers to correct frame
     set(ptch,'Parent',hg(i));
 end
+% Delete temporary figure
 delete(fig);

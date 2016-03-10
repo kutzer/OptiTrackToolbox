@@ -1,44 +1,66 @@
 % SCRIPT_Visualize_OptiTrack
-%% 
+%   
+%   M. Kutzer 20Jan2016, USNA
+
+%% Clear workspace, close all figures, clear command window
 clear all
 close all
 clc
 
-%% 
+%% Create OptiTrack object and initialize
 obj = OptiTrack;
 obj.Initialize;
 
-%% 
-fig = figure;
-axs = axes('Parent',fig);
-daspect(axs,[1 1 1]);
-xlabel(axs,'x');
-ylabel(axs,'-z');
-zlabel(axs,'y');
+%% Create and setup figure and axes (downward looking FOV)
+fig = figure('Name','Visualize OptiTrack Example');
+axs = axes('Parent',fig,'DataAspectRatioMode','manual',...
+	'DataAspectRatio',[1 1 1],'NextPlot','add','View',[180,0]);
 
-% Create global frame
-%gf = triad('Parent',axs,'LineWidth',2.5,'Scale',35,'Matrix',Rx(-pi/2));
+% Label axes
+xlabel(axs,'x (mm)');
+ylabel(axs,'y (mm)');
+zlabel(axs,'z (mm)');
 
 % Update limits to match tracking volume
-xx = [-3100,3200];
-yy = [0,3000];
-zz = [-5100,6000];
-%set(axs,'xlim',xx,'ylim',sort(-zz),'zlim',yy);
+xx = [-3100, 3200]; % (mm)
+yy = [    0, 3000]; % (mm), Floor to ceiling
+zz = [-5100, 6000]; % (mm)
 set(axs,'xlim',xx,'ylim',yy,'zlim',zz);
 
-% Create rigid bodies
+%% Plot rigid bodies
 hg = plotRigidBody(axs,obj.RigidBody);
 
-%% Views
-view(axs,[180,0]); % OptiTrack Top View
-%view(2)
-%%
+%% Create position "tails"
+for i = 1:numel(hg)
+    H = get(hg(i),'Matrix');
+    plt(i) = plot(H(1,4),H(2,4),H(3,4),'.','Color',rand(1,3));
+end
+
+%% Visualize rigid body movements
 while true
-    rb = obj.RigidBody;
+    % Exit loop when figure is closed
+    if ~ishandle(fig)
+        break
+    end
+    % Get current rigid body information
+    rb = OTobj.RigidBody;
+    % Update each rigid body
     for i = 1:numel(rb)
         if rb(i).isTracked
-            set(hg(i),'Matrix',rb(i).HgTransform,'Visible','On');
+            % Update rigid body pose if tracked
+            H = rb(i).HgTransform;
+            set(hg(i),'Matrix',H,'Visible','On');
+            % Update tail if tracked
+            x = get(plt(i),'XData');
+            y = get(plt(i),'YData');
+            z = get(plt(i),'ZData');
+            % TODO - consider limiting tail length
+            set(plt(i),...
+                'XData',[x,H(1,4)],...
+                'YData',[y,H(2,4)],...
+                'ZData',[z,H(3,4)]);
         else
+            % Make visualization invisible if rigid body is not tracked
             set(hg(i),'Visible','Off');
         end
     end

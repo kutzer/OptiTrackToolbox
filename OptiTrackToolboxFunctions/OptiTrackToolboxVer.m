@@ -12,10 +12,14 @@ function varargout = OptiTrackToolboxVer
 %
 %   M. Kutzer 17Feb2016, USNA
 
+% Updates
+%   10Mar2016 - Updates to plotRigidBody documentation and visualization
+%               script.
+
 A.Name = 'OptiTrack Toolbox';
-A.Version = '1.0.0';
+A.Version = '1.0.1';
 A.Release = '(R2015b)';
-A.Date = '17-Feb-2016';
+A.Date = '10-Mar-2016';
 A.URLVer = 1;
 
 msg{1} = sprintf('MATLAB %s Version: %s %s',A.Name, A.Version, A.Release);
