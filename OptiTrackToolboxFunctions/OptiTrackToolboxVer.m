@@ -15,9 +15,11 @@ function varargout = OptiTrackToolboxVer
 % Updates
 %   10Mar2016 - Updates to plotRigidBody documentation and visualization
 %               script.
+%   10Mar2016 - Corrected plot error in example script and added error
+%               check for not-tracked issue in plotRigidBody
 
 A.Name = 'OptiTrack Toolbox';
-A.Version = '1.0.1';
+A.Version = '1.0.2';
 A.Release = '(R2015b)';
 A.Date = '10-Mar-2016';
 A.URLVer = 1;

@@ -33,7 +33,7 @@ hg = plotRigidBody(axs,obj.RigidBody);
 %% Create position "tails"
 for i = 1:numel(hg)
     H = get(hg(i),'Matrix');
-    plt(i) = plot(H(1,4),H(2,4),H(3,4),'.','Color',rand(1,3));
+    plt(i) = plot3(H(1,4),H(2,4),H(3,4),'.','Color',rand(1,3));
 end
 
 %% Visualize rigid body movements
@@ -43,7 +43,7 @@ while true
         break
     end
     % Get current rigid body information
-    rb = OTobj.RigidBody;
+    rb = obj.RigidBody;
     % Update each rigid body
     for i = 1:numel(rb)
         if rb(i).isTracked
