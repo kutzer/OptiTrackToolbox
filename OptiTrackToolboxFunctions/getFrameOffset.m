@@ -1,6 +1,24 @@
 function HgOffset = getFrameOffset(MarkerPosition,MarkerDesignPosition)
-% THIS PROJECT IS STILL A WORK IN PROGRESS
+% GETFRAMEOFFSET define the offset transformation between the OptiTrack 
+% assigned reference and the design reference frame
+%   HgOffset = GETFRAMEOFFSET(MarkerPosition,MarkerDesignPosition) defines
+%   the transformation relating the marker positions in the body-fixed
+%   frame as specified in Motive to the marker design position.
+%
+%   Note: This function requires the order of marker coordinates specified
+%   in "MarkerPosition" to match the order of marker coordinates specified
+%   in "MarkerDesignPosition." Failure to establish the correct
+%   correspondence will result in an incorrect offset position/orientation.
+%
+%   See also: OptiTrack
+%
+%   M. Kutzer 23Feb2016, USNA
 
+% Updates
+%   10Mar2016 - Updated documentation
+
+%% Calculate offset
+% TODO - allow option to sort points to find the best correspondence
 q = MarkerPosition;
 p = MarkerDesignPosition;
 HgOffset = pointsToSE3(q,p);
@@ -21,14 +39,13 @@ function H = pointsToSE3(q,p)
 %   q = [q_1,q_2,q_3...q_N], q_i - 3x1
 %
 %   References
-%       [2] D.W. Eggert1, A. Lorusso2, R.B. Fisher3, "Estimating 3-D rigid 
+%       [1] D.W. Eggert1, A. Lorusso2, R.B. Fisher3, "Estimating 3-D rigid 
 %       body transformations: a comparison of four major algorithms," 
 %       Machine Vision and Applications (1997) 9: 272–290
 %
 %   (c) M. Kutzer 10July2015, USNA
 
-%TODO - implement special cases 3.2.4 from [2]
-%TODO - select best method
+%TODO - implement special cases 3.2.4 from [1]
 
 % Define total number of points
 N = size(p,2);

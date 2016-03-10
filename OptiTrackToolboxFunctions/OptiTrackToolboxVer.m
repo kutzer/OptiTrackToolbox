@@ -1,5 +1,5 @@
 function varargout = OptiTrackToolboxVer
-% OPTITRACKTOOLBOXVER displays the OptiTrack Toolbox information.
+% OPTITRACKTOOLBOXVER display the OptiTrack Toolbox information.
 %   OPTITRACKTOOLBOXVER displays the information to the command prompt.
 %
 %   A = OPTITRACKTOOLBOXVER returns in A the sorted struct array of version 
@@ -17,9 +17,10 @@ function varargout = OptiTrackToolboxVer
 %               script.
 %   10Mar2016 - Corrected plot error in example script and added error
 %               check for not-tracked issue in plotRigidBody
+%   10Mar2016 - Updated error checking in plotRigidBody and example updates
 
 A.Name = 'OptiTrack Toolbox';
-A.Version = '1.0.2';
+A.Version = '1.0.3';
 A.Release = '(R2015b)';
 A.Date = '10-Mar-2016';
 A.URLVer = 1;

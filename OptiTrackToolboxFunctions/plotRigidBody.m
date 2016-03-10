@@ -66,7 +66,15 @@ if ishandle(varargin{1})
     idx = 2;
 else
     axsOut = gca;
-    idx = 1;
+    % Check class of first input
+    switch lower( class(varargin{1}) )
+        case 'struct'
+            idx = 1; % treat first object as "RigidBody"
+        otherwise
+            % TODO - improve warning
+            warning('Invalid graphics object specified. Ignoring first input.');
+            idx = 2;
+    end
 end
 % Assign rigid body
 if nargin >= idx
