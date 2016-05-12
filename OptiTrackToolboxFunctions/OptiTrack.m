@@ -138,7 +138,7 @@ classdef OptiTrack < matlab.mixin.SetGet % Handle
             % connection type {'Multicast', 'Unicast'}.
             
             % Check inputs
-            narginchk(1,3);
+            %narginchk(1,3);
             cType = 0;  % Default connection type to multicast
             if nargin >= 2
                 % Designated host IP
