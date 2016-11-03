@@ -1,4 +1,4 @@
-function [BSEPR,grip] = ScorReceiveBSEPRG(udpR)
+function RigidBody = receiveRigidBody(udpR)
 % SCORRECEIVEBSEPRG receives a BSEPR value and gripper state from a port 
 % designated by a UDP receiver object.
 %   [BSEPR,grip] = ScorSendBSEPRG(udpS) receives a BSEPR value and gripper 
@@ -12,12 +12,10 @@ function [BSEPR,grip] = ScorReceiveBSEPRG(udpR)
 %
 %   See also ScorInitSender ScorInitReceiver ScorSendBSEPRG ScorTeleop
 %
-%   M. Kutzer, 12Apr2016, USNA
+%   M. Kutzer, 03Nov2016, USNA
 
 % Updates
-%   23Aug2016 - Clarified variable names and error messages and added
-%               gripper state.
-%   25Aug2016 - Updated to check for inputs.
+
 
 %% Check inputs
 % TODO - improve error handling
