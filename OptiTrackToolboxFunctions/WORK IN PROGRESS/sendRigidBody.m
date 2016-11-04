@@ -12,6 +12,7 @@ function sendRigidBody(udpSs,RigidBody)
 %
 %       RigidBody(i).Name
 %       RigidBody(i).TimeStamp
+%       RigidBody(i).isTracked
 %       RigidBody(i).Position
 %       RigidBody(i).Quaternion
 %
@@ -39,20 +40,36 @@ for i = 1:numel(udpSs)
 end
 
 %% Send message
+% Define message format
+msgFormat = msgFormatRigidBody;
+
 for i = 1:numel(RigidBody)
     % Create message
-    %   $1:Name:TimeStamp,P(1),P(2),P(3),Q(1),Q(2),Q(3),Q(4)!'
-    msg_Send = sprintf('$%d:%s:%.3f,%.2f,%.2f,%.2f,%.7f,%.7f,%.7f,%.7f!',...
-        i,...
-        RigidBody(i).Name,...
-        RigidBody(i).TimeStamp,...
-        RigidBody(i).Position,...
-        RigidBody(i).Quaternion);
+    %   $1:Name:TimeStamp,isTracked,P(1),P(2),P(3),Q(1),Q(2),Q(3),Q(4)!'
+    if RigidBody(i).isTracked
+        % Tracked rigid body
+        msg_Send = sprintf(msgFormat,...
+            i,...
+            strrep(RigidBody(i).Name,' ','_'),... % Replace white spaces with underscores (to simplify parsing)
+            RigidBody(i).TimeStamp,...
+            RigidBody(i).isTracked,...
+            RigidBody(i).Position,...
+            RigidBody(i).Quaternion);
+    else
+        % Not tracked rigid body
+        msg_Send = sprintf(msgFormat,...
+            i,...
+            strrep(RigidBody(i).Name,' ','_'),... % Replace white spaces with underscores (to simplify parsing)
+            RigidBody(i).TimeStamp,...
+            RigidBody(i).isTracked,...
+            zeros(1,3),...
+            zeros(1,4));
+    end
     % Convert message
     dataSend = uint8(msg_Send);
     % Send message
     step(udpSs{i}, dataSend);
-    % Append message
+    % Display message
     fprintf('%s\n',msg_Send);
 end
 

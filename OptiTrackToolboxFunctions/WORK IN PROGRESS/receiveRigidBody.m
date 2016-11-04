@@ -29,14 +29,25 @@ switch class(udpR)
 end
 
 %% Receive message
-% TODO - improve message handling
+% Define message format
+msgFormat = msgFormatRigidBody;
+
 % Receive message
 dataReceived = step(udpR);
 % Convert message
-msg_Rsvd = char(dataReceived');
+msgRsvd = char(dataReceived');
 % Parse message
-fprintf('Bytes Received: %d\n',numel(msg_Rsvd));
-disp(msg_Rsvd)
+numMsg = sscanf(msgRsvd,msgFormat,[1,inf]);
+idx   = numMsg(1);
+Name  = char(numMsg((     2):(end-11)));
+TimeStamp  = numMsg((end-10):(end- 9));
+isTracked  = numMsg((end- 8):(end- 7));
+Position   = numMsg((end- 6):(end- 4));
+Quaternion = numMsg((end- 3):(end   ));
+
+% Display message
+fprintf('Bytes Received: %d\n',numel(msgRsvd));
+fprintf('%s\n',msgRsvd);
 
 RigidBody = [];
 

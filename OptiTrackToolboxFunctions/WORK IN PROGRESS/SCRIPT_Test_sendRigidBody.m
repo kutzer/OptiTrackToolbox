@@ -25,6 +25,7 @@ for frame = 1:500
     for i = 1:7
         RigidBody(i).Name = sprintf('Rigid Body %d',i);
         RigidBody(i).TimeStamp = t;
+        RigidBody(i).isTracked = true;
         RigidBody(i).Position = i*rand(1,3);
         RigidBody(i).Quaternion = rand(1,4);
     end
