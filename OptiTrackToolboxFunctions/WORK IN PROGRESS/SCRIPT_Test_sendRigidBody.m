@@ -1,8 +1,21 @@
 %% SCRIPT_Test_sendRigidBody
-% Designate port
-port = 31500;
-% Initialize sender
-udpS = initSender(port);
+% Delete existing udpS
+if exist('udpSs')
+    for i = 1:numel(udpSs)
+        udpS = udpSs{i};
+        delete(udpS);
+    end
+end
+clear udpSs
+
+% Designate port starting value
+port0 = 31000;
+% Define number of rigid bodies
+n = 7;
+% Initialize senders
+for i = 1:n
+    udpSs{i} = initSender(port0+i);
+end
 
 %% Create default rigid bodies for sending
 tic;
@@ -16,7 +29,8 @@ for frame = 1:500
         RigidBody(i).Quaternion = rand(1,4);
     end
     % Send rigid body
-    sendRigidBody(udpS,RigidBody);
+    sendRigidBody(udpSs,RigidBody);
     % Display update to command window
     fprintf('Frame %d Sent, t = %f\n',[frame,t]);
+    pause(0.01);
 end

@@ -35,6 +35,7 @@ dataReceived = step(udpR);
 % Convert message
 msg_Rsvd = char(dataReceived');
 % Parse message
+fprintf('Bytes Received: %d\n',numel(msg_Rsvd));
 disp(msg_Rsvd)
 
 RigidBody = [];
