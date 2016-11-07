@@ -1,6 +1,6 @@
 %% SCRIPT_Test_PackAndParsing_Messages
 % Define message format
-msgFormat = msgFormatRigidBody;
+[sndFormat,rsvFormat] = msgFormatRigidBody;
 
 tic;
 for frame = 1:500
@@ -14,10 +14,11 @@ for frame = 1:500
         RigidBody(i).Quaternion = rand(1,4);
     end
     
+    % Pack messages for sending
     for i = 1:7
         if RigidBody(i).isTracked
             % Tracked rigid body
-            msgSend = sprintf(msgFormat,...
+            msgSend = sprintf(sndFormat,...
                 i,...
                 strrep(RigidBody(i).Name,' ','_'),... % Replace white spaces with underscores (to simplify parsing)
                 RigidBody(i).TimeStamp,...
@@ -26,7 +27,7 @@ for frame = 1:500
                 RigidBody(i).Quaternion);
         else
             % Not tracked rigid body
-            msgSend = sprintf(msgFormat,...
+            msgSend = sprintf(sndFormat,...
                 i,...
                 strrep(RigidBody(i).Name,' ','_'),... % Replace white spaces with underscores (to simplify parsing)
                 RigidBody(i).TimeStamp,...
@@ -42,24 +43,33 @@ for frame = 1:500
         fprintf('Msg: %s\n',msgRsvd);
         
         % Parse message
-        numMsg = sscanf(msgRsvd,msgFormat,[1,inf]);
-        idx   = numMsg(1);
-        Name  = char(numMsg((     2):(end-11)));
-        TimeStamp  = numMsg((end-10):(end- 9));
-        isTracked  = numMsg((end- 8):(end- 7));
-        Position   = numMsg((end- 6):(end- 4));
-        Quaternion = numMsg((end- 3):(end   ));
+        splitStr = regexp(msgRsvd,'\:','split');
+        rsvFormats = regexp(rsvFormat,'\:','split');
+        if numel(splitStr) == 3
+            idx = sscanf(splitStr{1},rsvFormats{1},[1 1]);
+            Name = splitStr{2};
+            out = sscanf(splitStr{3},rsvFormats{3},[1,9]);
+            TimeStamp  = out(1);
+            isTracked  = out(2);
+            if isTracked
+                Position   = out(3:5);
+                Quaternion = out(6:end);
+            else
+                Position   = NaN(1,3);
+                Quaternion = NaN(1,4);
+            end
+        end
         
         % Display parsed message
-        fprintf(['Prs: ',msgFormat,'\n'],...
+        fprintf(['Prs: ',sndFormat,'\n'],...
             idx,...
             Name,...
             TimeStamp,...
             isTracked,...
-            TimeStamp,...
             Position,...
             Quaternion);
         pause(0.01);
+        %pause
     end
     
 end
