@@ -8,6 +8,13 @@ obj.Initialize;
 rb = obj.RigidBody;
 n = numel(rb);
 
+%% Delete old senders
+if exist('udpSs','var')
+    for i = 1:numel(udpSs)
+        delete(udpSs{i});
+    end
+end
+
 %% Setup sender
 % Specify Broadcast IP
 [~,IP] = getIPv4;
@@ -16,7 +23,7 @@ port0 = 31000;
 for i = 1:n
     % Define and open port
     port = port0 + i;
-    udpSs{i} = initSender(port);
+    udpSs{i} = initSender(port,IP);
     % Display port information for each rigid body
     fprintf('---- Rigid Body %d ----\n',i);
     fprintf('\t Rigid Body Name: %s\n',rb(i).Name);

@@ -3,6 +3,13 @@
 %% Define number of rigid bodies
 n = 2;
 
+%% Delete old receivers
+if exist('udpSs','var')
+    for i = 1:numel(udpSs)
+        delete(udpSs{i});
+    end
+end
+
 %% Setup receiver
 port0 = 31000;
 for i = 1:n
@@ -38,7 +45,7 @@ for i = 1:n
 end
 
 %% Receive data
-while true
+while ishandle(fig)
     % Get current rigid body information
     RigidBody = receiveRigidBody(udpRs);
     pause(0.001);
