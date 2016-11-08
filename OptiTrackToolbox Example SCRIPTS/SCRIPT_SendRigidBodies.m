@@ -9,6 +9,9 @@ rb = obj.RigidBody;
 n = numel(rb);
 
 %% Setup sender
+% Specify Broadcast IP
+[~,IP] = getIPv4;
+% Establish ports
 port0 = 31000;
 for i = 1:n
     % Define and open port
@@ -27,5 +30,5 @@ while true
     % Send rigid body
     sendRigidBody(udpSs,rb);
     % Pause for a fixed interval
-    pause(0.008);
+    pause(0.01);
 end

@@ -2,7 +2,8 @@ function udpS = initSender(port,IP)
 % INITSENDER initializes a UDP server for transmitting information to a
 % remote client.
 %   udpS = initSender(port) creates a UDP Sender tied to the designated
-%   port (suggested ports 31000 - 32000) using a default broadcast IP.
+%   port (suggested ports 31000 - 32000) using a user-selected broadcast 
+%   IP.
 %
 %   udpS = initSender(port,IP) creates a UDP Sender tied to the 
 %   designated port (suggested ports 31000 - 32000) using a specified IP.

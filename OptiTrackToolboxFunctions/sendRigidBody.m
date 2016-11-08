@@ -79,7 +79,7 @@ for i = 1:numel(RigidBody)
     % Send message
     step(udpSs{i}, dataSend);
     % Display message
-    fprintf('%s\n',msg_Send);
+    %fprintf('%s\n',msg_Send);
 end
 
 

@@ -1,4 +1,4 @@
-function udpR = initReceiver(port)
+function udpR = initReceiver(port,IP)
 % INITRECEIVER defines a UDP client for receiving information from to a 
 % remote server.
 %   udpR = INITRECEIVER(port) initializes a UDP Receiver tied to the 
@@ -16,8 +16,16 @@ function udpR = initReceiver(port)
 
 %% Check inputs
 % TODO - improve error handling
-narginchk(1,1);
+narginchk(1,2);
 % TODO - check port range
 
+%% Set default IP
+if nargin < 2
+    % Set to broadcast
+    % NOTE: This IP should be tied to your network IP
+    %[~,IP] = getIPv4;
+    IP = '0.0.0.0';
+end
+
 %% Create UDP receiver
-udpR = dsp.UDPReceiver('LocalIPPort',port);
+udpR = dsp.UDPReceiver('LocalIPPort',port,'RemoteIPAddress',IP);

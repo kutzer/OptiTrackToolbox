@@ -1,7 +1,7 @@
 function RigidBody = receiveRigidBody(udpRs)
-% RECEIVERIGIDBODY sends rigid body properties via a port designated by a 
+% RECEIVERIGIDBODY sends rigid body properties via a port designated by a
 % UDP receiver.
-%   RigidBody = RECEIVERIGIDBODY(udpR) receives the following rigid body 
+%   RigidBody = RECEIVERIGIDBODY(udpR) receives the following rigid body
 %   properties via a single port designated by "udpR"
 %       RigidBody.Index
 %       RigidBody.Name
@@ -12,7 +12,7 @@ function RigidBody = receiveRigidBody(udpRs)
 %       RigidBody.Rotation
 %       RigidBody.HgTransform
 %
-%   RigidBody = RECEIVERIGIDBODY(udpRs) receives the following rigid body 
+%   RigidBody = RECEIVERIGIDBODY(udpRs) receives the following rigid body
 %   properties via a cell of ports designated by "udpRs"
 %       RigidBody(i).Index      - Rigid body index value (should match i)
 %       RigidBody(i).Name
@@ -63,6 +63,10 @@ for i = 1:numel(udpRs)
     % Convert message
     msgRsvd = char(dataReceived');
     
+    % Display message
+    %fprintf('Bytes Received: %d, Msg: ',numel(msgRsvd));
+    %fprintf('%s\n',msgRsvd);
+    
     % Parse message
     splitStr = regexp(msgRsvd,'\:','split');
     rsvFormats = regexp(rsvFormat,'\:','split');
@@ -79,25 +83,30 @@ for i = 1:numel(udpRs)
             Position   = NaN(1,3);
             Quaternion = NaN(1,4);
         end
-    end
-    
-    % Package message
-    RigidBody(i).Index       = idx;
-    RigidBody(i).Name        = Name;
-    RigidBody(i).TimeStamp   = TimeStamp;
-    RigidBody(i).isTracked   = isTracked;
-    RigidBody(i).Position    = Position;
-    RigidBody(i).Quaternion  = Quaternion;
-    if isTracked
-        RigidBody(i).Rotation    = quat2dcm(RigidBody(i).Quaternion);
-        RigidBody(i).HgTransform = [RigidBody(i).Rotation,RigidBody(i).Position;0,0,0,1];
+        
+        % Package message
+        RigidBody(i).Index       = idx;
+        RigidBody(i).Name        = Name;
+        RigidBody(i).TimeStamp   = TimeStamp;
+        RigidBody(i).isTracked   = isTracked;
+        RigidBody(i).Position    = Position;
+        RigidBody(i).Quaternion  = Quaternion;
+        if isTracked
+            RigidBody(i).Rotation    = quat2dcm(RigidBody(i).Quaternion);
+            RigidBody(i).HgTransform = [RigidBody(i).Rotation,RigidBody(i).Position';0,0,0,1];
+        else
+            RigidBody(i).Rotation = NaN(3,3);
+            RigidBody(i).HgTransform = NaN(4,4);
+        end
     else
-        RigidBody(i).Rotation = NaN(3,3);
-        RigidBody(i).HgTransform = NaN(4,4);
+        RigidBody(i).Index       = [];
+        RigidBody(i).Name        = [];
+        RigidBody(i).TimeStamp   = [];
+        RigidBody(i).isTracked   = [];
+        RigidBody(i).Position    = [];
+        RigidBody(i).Quaternion  = [];
+        RigidBody(i).Rotation    = [];
+        RigidBody(i).HgTransform = [];
     end
-    
-    % Display message
-    fprintf('Bytes Received: %d, Msg: ',numel(msgRsvd));
-    fprintf('%s\n',msgRsvd);
 end
 
