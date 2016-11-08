@@ -19,11 +19,21 @@ function sendRigidBody(udpSs,RigidBody)
 %   M. Kutzer, 03Nov2016, USNA
 
 % Updates
-
+%   08Nov2016 - Added multiple port functionality
 
 %% Check inputs
 % TODO - improve error handling
-narginchk(1,3);
+narginchk(2,2);
+
+% Check for matching number of UDP servers and rigid bodies
+if numel(udpSs) ~= numel(RigidBody)
+    if numel(udpSs) < numel(RigidBody)
+        error('SendRigidBody:NotEnoughUDPS',...
+            'The total number of UDP senders must meet or exceed the number of rigid bodies being sent.');
+    else
+        warning('There are more UDP senders specified than rigid bodies.');
+    end
+end
 
 %% Check UDP Sender
 for i = 1:numel(udpSs)
@@ -32,23 +42,22 @@ for i = 1:numel(udpSs)
         case 'dsp.UDPSender'
             % Valid UDPSender
         otherwise
-            error('ScorSend:BadSender',...
+            error('SendRigidBody:BadSender',...
                 ['Specified UDP Sender must be valid.',...
-                '\n\t-> Use "udpS = ScorInitSender(port);" with a valid port ',...
+                '\n\t-> Use "udpS = initSender(port);" with a valid port ',...
                 '\n\t   number to create a valid UDP Sender.']);
     end
 end
 
 %% Send message
 % Define message format
-msgFormat = msgFormatRigidBody;
+sndFormat = msgFormatRigidBody;
 
 for i = 1:numel(RigidBody)
     % Create message
-    %   $1:Name:TimeStamp,isTracked,P(1),P(2),P(3),Q(1),Q(2),Q(3),Q(4)!'
     if RigidBody(i).isTracked
-        % Tracked rigid body
-        msg_Send = sprintf(msgFormat,...
+        % Rigid body is tracked
+        msg_Send = sprintf(sndFormat,...
             i,...
             strrep(RigidBody(i).Name,' ','_'),... % Replace white spaces with underscores (to simplify parsing)
             RigidBody(i).TimeStamp,...
@@ -56,14 +65,14 @@ for i = 1:numel(RigidBody)
             RigidBody(i).Position,...
             RigidBody(i).Quaternion);
     else
-        % Not tracked rigid body
-        msg_Send = sprintf(msgFormat,...
+        % Rigid body is not tracked
+        msg_Send = sprintf(sndFormat,...
             i,...
             strrep(RigidBody(i).Name,' ','_'),... % Replace white spaces with underscores (to simplify parsing)
             RigidBody(i).TimeStamp,...
             RigidBody(i).isTracked,...
-            zeros(1,3),...
-            zeros(1,4));
+            zeros(1,3),...                        % Default to zero position
+            zeros(1,4));                          % Default to quaternion of all zeros
     end
     % Convert message
     dataSend = uint8(msg_Send);
