@@ -70,7 +70,7 @@ classdef OptiTrack < matlab.mixin.SetGet % Handle
     %       OTobj.Initialize;
     %       rigidBody = OTobj.RigidBody;
     %       for i = 1:numel(rigidBody)
-    %           triad('Matrix',rigidBody.HgTransform);
+    %           triad('Matrix',rigidBody(i).HgTransform);
     %       end
     %
     % See also PLOTRIGIDBODY
@@ -79,6 +79,7 @@ classdef OptiTrack < matlab.mixin.SetGet % Handle
     
     % Updates
     %   17Feb2016 - Included calling function path for NatNet support
+    %   08Oct2019 - Corrected typo in the provided example
     
     % --------------------------------------------------------------------
     % General properties
