@@ -80,12 +80,12 @@ if isToolbox == 7
     end
 end
 
-%% Create Scorbot Toolbox Path
+%% Create OptiTrack Toolbox Path
 [isDir,msg,msgID] = mkdir(toolboxRoot);
 if isDir
     fprintf('OptiTrack toolbox folder created successfully:\n\t"%s"\n',toolboxRoot);
 else
-    fprintf('Failed to create Scorbot Toolbox folder:\n\t"%s"\n',toolboxRoot);
+    fprintf('Failed to create OptiTrack Toolbox folder:\n\t"%s"\n',toolboxRoot);
     fprintf(adminSolution);
     error(msgID,msg);
 end
@@ -219,7 +219,7 @@ pname_star = fnames{cIdx}(1:sIdx-1);
 cpath = cd;
 cd(pname_star);
 
-%% Install ScorBot Toolbox
+%% Install OptiTrack Toolbox
 installToolbox(true);
 
 %% Move back to current directory and remove temp file
