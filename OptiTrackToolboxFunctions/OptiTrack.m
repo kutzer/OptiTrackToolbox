@@ -80,6 +80,10 @@ classdef OptiTrack < matlab.mixin.SetGet % Handle
     % Updates
     %   17Feb2016 - Included calling function path for NatNet support
     %   08Oct2019 - Corrected typo in the provided example
+    %   07Jan2021 - Corrected client.Initialize(IP,IP) to 
+    %               client.Initialize(clientIP,hostIP), added clientIP
+    %               select, etc. Corrections specified by Patrick
+    %               McCorkell, USNA.
     
     % --------------------------------------------------------------------
     % General properties
@@ -143,10 +147,12 @@ classdef OptiTrack < matlab.mixin.SetGet % Handle
             cType = 0;  % Default connection type to multicast
             if nargin >= 2
                 % Designated host IP
-                IP = varargin{1};
+                hostIP = varargin{1};
+                clientIP = getIPv4('Select IP for OptiTrack Connection');
             else
                 % Local loop-back
-                IP = '127.0.0.1';
+                hostIP = '127.0.0.1';
+                clientIP = '127.0.0.1';
             end
             if nargin >= 3
                 % Define connection type
@@ -163,9 +169,13 @@ classdef OptiTrack < matlab.mixin.SetGet % Handle
             
             % Check IP
             % TODO - check for valid IP address
-            if ~ischar(IP)
+            if ~ischar(hostIP)
                 error('OptiTrack:Init:BadIP',...
                     'The host IP must be specified as a character/string input (e.g. ''192.168.1.1'').');
+            end
+            if ~ischar(clientIP)
+                error('OptiTrack:Init:BadIP',...
+                    'The client IP must be specified as a character/string input (e.g. ''192.168.1.2'').');
             end
             
             % Check operating system to set dllPath
@@ -201,7 +211,7 @@ classdef OptiTrack < matlab.mixin.SetGet % Handle
             client = NatNetML.NatNetClientML(cType);
             
             % Set the IP
-            errFlag = client.Initialize(IP,IP);
+            errFlag = client.Initialize(clientIP, hostIP);
             if errFlag
                 client.Uninitialize;
                 error('OptiTrack:Init:Failed','Failed to initialize the NatNet client.');

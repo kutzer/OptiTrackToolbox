@@ -1,6 +1,8 @@
 function [localIP,broadcastIP] = getIPv4(varargin)
 % GETIPV4 uses Java functionality to find the local IP and broadcast IP for
 % wired connections.
+%   [localIP,broadcastIP] = GETIPV4(promptName) allows the user to specify
+%   a name for the IP selection prompt. 
 %
 %   Note: This function is still a work in progress.
 %
@@ -8,7 +10,17 @@ function [localIP,broadcastIP] = getIPv4(varargin)
 
 % Updates
 %   08Nov2016 - Updated to account for multiple network connections
+%   07Jan2021 - Updated to allow the user to specify the prompt name
 
+%% Parse inputs
+
+narginchk(0,1);
+promptName = 'Multiple NIC Found';
+if nargin > 0
+    promptName = varargin{1};
+end
+
+ 
 %% Get local host, networkInterface, and interface addresses using java
 % Get the local network host
 localhost = java.net.Inet4Address.getLocalHost();
@@ -58,7 +70,7 @@ for i = 1:n
         broadcastIP{i});
 end
 
-[s,ok] = listdlg('Name','Multiple NIC Found',...
+[s,ok] = listdlg('Name',promptName,...
     'PromptString','Select network adapter:',...
     'SelectionMode','single',...
     'ListString',listStr,...
