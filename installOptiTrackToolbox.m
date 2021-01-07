@@ -50,7 +50,7 @@ if isToolbox == 7
         choice = questdlg(sprintf(...
             ['MATLAB Root already contains the OptiTrack Toolbox.\n',...
             'Would you like to replace the existing toolbox?']),...
-            'Yes','No');
+            'Replace Existing OptiTrack Toolbox','Yes','No','Cancel','Yes');
     elseif replaceExisting
         choice = 'Yes';
     else
@@ -203,11 +203,23 @@ end
 fprintf('Downloading the %s Toolbox...',toolboxName);
 tmpFolder = sprintf('%sToolbox',toolboxName);
 pname = fullfile(tempdir,tmpFolder);
+if isfolder(pname)
+    % Remove existing directory
+    [ok,msg] = rmdir(pname,'s');
+end
+% Create new directory
+[ok,msg] = mkdir(tempdir,tmpFolder);
 
 %% Download and unzip toolbox (GitHub)
 url = sprintf('https://github.com/kutzer/%sToolbox/archive/master.zip',toolboxName);
 try
-    fnames = unzip(url,pname);
+    %fnames = unzip(url,pname);
+    %urlwrite(url,fullfile(pname,tmpFname));
+    tmpFname = sprintf('%sToolbox-master.zip',toolboxName);
+    websave(fullfile(pname,tmpFname),url);
+    fnames = unzip(fullfile(pname,tmpFname),pname);
+    delete(fullfile(pname,tmpFname));
+    
     fprintf('SUCCESS\n');
     confirm = true;
 catch
