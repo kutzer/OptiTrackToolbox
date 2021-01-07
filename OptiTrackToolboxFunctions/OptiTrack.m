@@ -65,9 +65,19 @@ classdef OptiTrack < matlab.mixin.SetGet % Handle
     %
     % Example:  
     %
+    %   Loopback IP Interface (default)
     %       % Create, initialize, and visualize
     %       OTobj = OptiTrack;
     %       OTobj.Initialize;
+    %       rigidBody = OTobj.RigidBody;
+    %       for i = 1:numel(rigidBody)
+    %           triad('Matrix',rigidBody(i).HgTransform);
+    %       end
+    %
+    %   Host IP Interface - Assumed Host IP is '10.60.69.244'
+    %       % Create, initialize, and visualize
+    %       OTobj = OptiTrack;
+    %       OTobj.Initialize('10.60.69.244');
     %       rigidBody = OTobj.RigidBody;
     %       for i = 1:numel(rigidBody)
     %           triad('Matrix',rigidBody(i).HgTransform);
@@ -84,6 +94,7 @@ classdef OptiTrack < matlab.mixin.SetGet % Handle
     %               client.Initialize(clientIP,hostIP), added clientIP
     %               select, etc. Corrections specified by Patrick
     %               McCorkell, USNA.
+    %   07Jan2021 - Documentation update
     
     % --------------------------------------------------------------------
     % General properties
