@@ -222,13 +222,30 @@ try
     
     fprintf('SUCCESS\n');
     confirm = true;
-catch
+catch ME
+    fprintf('FAILED\n');
     confirm = false;
+    fprintf(2,'ERROR MESSAGE:\n\t%s\n',ME.message);
 end
 
 %% Check for successful download
+alternativeInstallMsg = [...
+    sprintf('Manually download the %s Toolbox using the following link:\n',toolboxName),...
+    newline,...
+    sprintf('%s\n',url),...
+    newline,...
+    sprintf('Once the file is downloaded:\n'),...
+    sprintf('\t(1) Unzip your download of the "%sToolbox"\n',toolboxName),...
+    sprintf('\t(2) Change your "working directory" to the location of "install%sToolbox.m"\n',toolboxName),...
+    sprintf('\t(3) Enter "install%sToolbox" (without quotes) into the command window\n',toolboxName),...
+    sprintf('\t(4) Press Enter.')];
+        
 if ~confirm
-    error('InstallToolbox:FailedDownload','Failed to download updated version of %s Toolbox.',toolboxName);
+    warning('InstallToolbox:FailedDownload','Failed to download updated version of %s Toolbox.',toolboxName);
+    fprintf(2,'\n%s\n',alternativeInstallMsg);
+	
+    msgbox(alternativeInstallMsg, sprintf('Failed to download %s Toolbox',toolboxName),'warn');
+    return
 end
 
 %% Find base directory
