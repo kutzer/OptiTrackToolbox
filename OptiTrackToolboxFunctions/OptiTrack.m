@@ -98,6 +98,7 @@ classdef OptiTrack < matlab.mixin.SetGet % Handle
     %               select, etc. Corrections specified by Patrick
     %               McCorkell, USNA.
     %   07Jan2021 - Documentation update
+    %   07Jan2021 - Corrected rb.Tracked to rigidBody(i).isTracked
     
     % --------------------------------------------------------------------
     % General properties
@@ -316,7 +317,7 @@ for i = 1:n
     % Tracking status (binary)
     rigidBody(i).isTracked = logical(rb.Tracked);
     % Check if rigid body is tracked
-    if rb.Tracked
+    if rigidBody(i).isTracked
         % Update info for tracked bodies
         % -> Native OptiTrack Info
         % Rigid body origin *relative* to the global reference frame

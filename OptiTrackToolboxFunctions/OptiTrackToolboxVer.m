@@ -22,7 +22,7 @@ function varargout = OptiTrackToolboxVer
 %               McCorkell, USNA
 
 A.Name = 'OptiTrack Toolbox';
-A.Version = '1.1.0';
+A.Version = '1.1.1';
 A.Release = '(R2019b)';
 A.Date = '07-Jan-2021';
 A.URLVer = 1;
