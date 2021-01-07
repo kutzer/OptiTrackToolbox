@@ -18,17 +18,34 @@ ToolboxVer = str2func( sprintf('%sToolboxVer',toolboxName) );
 installToolbox = str2func( sprintf('install%sToolbox',toolboxName) );
 
 %% Check current version
-A = ToolboxVer;
+try
+    A = ToolboxVer;
+catch ME
+    A = [];
+    fprintf('No previous version of %s detected.\n',toolboxName);
+end
 
 %% Setup temporary file directory
 fprintf('Downloading the %s Toolbox...',toolboxName);
 tmpFolder = sprintf('%sToolbox',toolboxName);
 pname = fullfile(tempdir,tmpFolder);
+if isfolder(pname)
+    % Remove existing directory
+    [ok,msg] = rmdir(pname,'s');
+end
+% Create new directory
+[ok,msg] = mkdir(tempdir,tmpFolder);
 
 %% Download and unzip toolbox (GitHub)
 url = sprintf('https://github.com/kutzer/%sToolbox/archive/master.zip',toolboxName);
 try
-    fnames = unzip(url,pname);
+    %fnames = unzip(url,pname);
+    %urlwrite(url,fullfile(pname,tmpFname));
+    tmpFname = sprintf('%sToolbox-master.zip',toolboxName);
+    websave(fullfile(pname,tmpFname),url);
+    fnames = unzip(fullfile(pname,tmpFname),pname);
+    delete(fullfile(pname,tmpFname));
+    
     fprintf('SUCCESS\n');
     confirm = true;
 catch
@@ -51,7 +68,7 @@ pname_star = fnames{cIdx}(1:sIdx-1);
 cpath = cd;
 cd(pname_star);
 
-%% Install ScorBot Toolbox
+%% Install OptiTrack Toolbox
 installToolbox(true);
 
 %% Move back to current directory and remove temp file
