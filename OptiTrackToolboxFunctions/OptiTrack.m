@@ -77,7 +77,7 @@ classdef OptiTrack < matlab.mixin.SetGet % Handle
     %   Host IP Interface - Assumed Host IP is '10.60.69.244'
     %       % Create, initialize, and visualize
     %       OTobj = OptiTrack;
-    %       OTobj.Initialize('10.60.69.244');
+    %       OTobj.Initialize('10.60.69.244','unicast');
     %       rigidBody = OTobj.RigidBody;
     %       for i = 1:numel(rigidBody)
     %           triad('Matrix',rigidBody(i).HgTransform);
