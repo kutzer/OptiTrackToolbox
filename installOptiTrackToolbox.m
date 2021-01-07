@@ -19,9 +19,10 @@ function installOptiTrackToolbox(replaceExisting)
 % TODO - Allow users to create a local version if admin rights are not
 % possible.
 
-%% Install/Update required toolboxes
-ToolboxUpdate('Transformation');
-ToolboxUpdate('Plotting');
+%% Define required toolboxes
+requiredToolboxes = {...
+    'Transformation',...
+	'Plotting'};
 
 %% Assign tool/toolbox specific parameters
 dirName = 'optitrack';
@@ -171,6 +172,16 @@ savepath;
 fprintf('Rehashing Toolbox Cache...');
 rehash TOOLBOXCACHE
 fprintf('[Complete]\n');
+
+%% Install/Update required toolboxes
+for i = 1:numel(requiredToolboxes)
+    try
+        ToolboxUpdate(requiredToolboxes{i});
+    catch ME
+        fprintf(2,'[ERROR]\nUnable to install required toolbox: "%s"\n',requiredToolboxes{i});
+        fprintf(2,'\t%s\n',ME.message);
+    end
+end
 
 end
 
