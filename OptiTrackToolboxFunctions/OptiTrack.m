@@ -85,7 +85,10 @@ classdef OptiTrack < matlab.mixin.SetGet % Handle
     %
     % See also PLOTRIGIDBODY
     %
-    %   M. Kutzer & L. DeVries 14Jan2016, USNA
+    %   M. Kutzer & L. DeVries, 14Jan2016, USNA
+    %
+    %   IP Client/Host Fix:
+    %       P. McCorkell & M. Kutzer, 17Dec2020, USNA
     
     % Updates
     %   17Feb2016 - Included calling function path for NatNet support
