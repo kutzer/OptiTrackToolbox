@@ -15,6 +15,7 @@ function installOptiTrackToolbox(replaceExisting)
 %   M. Kutzer 17Feb2016, USNA
 
 % Updates
+%   07Jan2021 - Updated ToolboxUpdate
 
 % TODO - Allow users to create a local version if admin rights are not
 % possible.

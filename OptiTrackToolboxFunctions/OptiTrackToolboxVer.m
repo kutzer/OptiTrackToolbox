@@ -20,9 +20,10 @@ function varargout = OptiTrackToolboxVer
 %   10Mar2016 - Updated error checking in plotRigidBody and example updates
 %   07Jan2021 - Corrected client/host IP distinction thanks to Patrick
 %               McCorkell, USNA
+%   07Jan2021 - Updated ToolboxUpdate
 
 A.Name = 'OptiTrack Toolbox';
-A.Version = '1.1.1';
+A.Version = '1.1.2';
 A.Release = '(R2019b)';
 A.Date = '07-Jan-2021';
 A.URLVer = 1;

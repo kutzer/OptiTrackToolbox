@@ -3,6 +3,9 @@ function OptiTrackToolboxUpdate
 %
 %   M. Kutzer 27Feb2016, USNA
 
+% Updates
+%   07Jan2021 - Updated ToolboxUpdate
+
 % TODO - Find a location for "OptiTrackToolbox Example SCRIPTS"
 % TODO - update function for general operation
 
