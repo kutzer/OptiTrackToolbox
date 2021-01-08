@@ -1,5 +1,6 @@
 obj = OptiTrack;
 obj.Initialize('10.60.69.244','unicast');
+%obj.Initialize('10.60.69.244','multicast');
 
 %%
 fig = figure;
@@ -16,6 +17,9 @@ end
 while true
     rigidBody = obj.RigidBody;
     for i = 1:numel(rigidBody)
+        if ~ishandle(fig)
+            break
+        end
         if numel(rigidBody) < i
             hg(i) = triad('Matrix',rigidBody(i).HgTransform);
         else

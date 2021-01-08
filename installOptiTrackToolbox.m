@@ -260,7 +260,7 @@ pname_star = fnames{cIdx}(1:sIdx-1);
 cpath = cd;
 cd(pname_star);
 
-%% Install OptiTrack Toolbox
+%% Install Toolbox
 installToolbox(true);
 
 %% Move back to current directory and remove temp file
