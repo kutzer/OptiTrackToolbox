@@ -8,6 +8,9 @@
 %           rbDataCell{i} - 1xN structured array contaning rigid body
 %                           information for the "ith" index
 %
+%   Output(s)
+%       rbData - 1xK cell array containing 
+%
 %   M. Kutzer, 09Aug2022, USNA
 
 %% Clear workspace, close all figures, clear command window
@@ -78,8 +81,8 @@ for i = 1:n
     end
 
     % Check each rigid body 
-    for j = 1:numel(rb)
-        ii = find( matches(rbNames,rb(j).Name) );
+    for j = 1:numel(rbNames)
+        ii = find( matches({rb.Name},rbNames{j}) );
 
         % Populate rigid body data fields
         for k = 1:numel(rbFields)
@@ -93,19 +96,24 @@ for i = 1:n
             else
                 goodfield = false;
             end
+            
+            % Check if rigid body name exists
+            if isempty(ii)
+                goodfield = false;
+            end
 
             switch rbFieldDataType{k}
                 case 'Numeric'
                     if goodfield
-                        rbData(i).(rbFields{k})(end+1,:) = rb(j).(rbFields{k});
+                        rbData(j).(rbFields{k})(end+1,:) = rb(ii).(rbFields{k});
                     else
-                        rbData(i).(rbFields{k})(end+1,:) = nan;
+                        rbData(j).(rbFields{k})(end+1,:) = nan;
                     end
                 case 'Cell'
                     if goodfield
-                        rbData(i).(rbFields{k}){end+1,:} = rb(j).(rbFields{k});
+                        rbData(j).(rbFields{k}){end+1,:} = rb(ii).(rbFields{k});
                     else
-                        rbData(i).(rbFields{k}){end+1,:} = [];
+                        rbData(j).(rbFields{k}){end+1,:} = [];
                     end
                 otherwise
                     error('Unrecognised field data type.')
