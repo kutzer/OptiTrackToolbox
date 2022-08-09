@@ -97,15 +97,15 @@ for i = 1:n
             switch rbFieldDataType{k}
                 case 'Numeric'
                     if goodfield
-                        rbData(i).(rbFields{k})(end+1) = rb(j).(rbFields{k});
+                        rbData(i).(rbFields{k})(end+1,:) = rb(j).(rbFields{k});
                     else
-                        rbData(i).(rbFields{k})(end+1) = nan;
+                        rbData(i).(rbFields{k})(end+1,:) = nan;
                     end
                 case 'Cell'
                     if goodfield
-                        rbData(i).(rbFields{k}){end+1} = rb(j).(rbFields{k});
+                        rbData(i).(rbFields{k}){end+1,:} = rb(j).(rbFields{k});
                     else
-                        rbData(i).(rbFields{k}){end+1} = [];
+                        rbData(i).(rbFields{k}){end+1,:} = [];
                     end
                 otherwise
                     error('Unrecognised field data type.')
