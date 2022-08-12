@@ -1,11 +1,28 @@
 % SCRIPT_VisualizeAndSave_OptiTrack
 %   Visualize and save tracked rigid body motion throughout the workspace 
-%   of the camera system. 
+%   of the camera system.
+%
+%   Output(s) [saved to user specified *.mat file]
+%       rbData - structured array containing saved data
+%           rbData(i).Name          - character array specifying ith rigid 
+%                                     body name (e.g. 'Rigid Body 1')
+%           rbData(i).TimeStamp     - 1xN array containing frame time stamp
+%                                     of the ith rigid body (seconds)
+%           rbData(i).HgTransform   - 1xN cell array containing rigid body 
+%                                     pose (position and orientation) 
+%                                     relative to the OptiTrack World Frame 
+%                                     represented using a 4x4 homogeneous 
+%                                     rigid body transformation (i.e. an
+%                                     element of the Special Euclidean 
+%                                     Group SE(3))
 %
 %   NOTE: This code assumes Data Streaming -> Up Axis -> Y Up in the Motive
 %   Software.
 %
 %   M. Kutzer 28Nov2017, USNA
+
+% Updates
+%   12Aug2022 - Documentation update
 
 %% Clear workspace, close all figures, clear command window
 clear all
