@@ -46,16 +46,16 @@ ylabel(axs,'y (mm)');
 zlabel(axs,'z (mm)');
 
 % Update limits to match tracking volume
-%   Note: These will change based on setup and definition of the ground
-%   plane in tracking software.
+%   NOTE: These will change based on setup and definition of the ground
+%         plane in tracking software.
 xx = [-5400, 6200]; % (mm)
 yy = [    0, 3200]; % (mm), Floor to ceiling
 zz = [-3500, 3500]; % (mm)
 set(axs,'xlim',xx,'ylim',yy,'zlim',zz);
 
 %% Plot rigid bodies
-%   Note: All tracked rigid bodies must be visible when plotting rigid 
-%   bodies.
+%   NOTE: All tracked rigid bodies must be visible when plotting rigid 
+%         bodies.
 hg = plotRigidBody(axs,obj.RigidBody);
 
 %% Create position "tails"
