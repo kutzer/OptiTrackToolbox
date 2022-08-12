@@ -59,10 +59,10 @@ hgScale = dX_lims/10;
 X_lims = X_lims + 1.2*dX_lims*[-ones(3,1), ones(3,1)];
 
 %% Create and setup figure and axes (downward looking FOV)
-fig = figure('Name','Visualize OptiTrack rbData');
+fig = figure('Name','Visualize OptiTrack rbData','Color',[0,0,0]);
 axs = axes('Parent',fig,'DataAspectRatioMode','manual',...
 	'DataAspectRatio',[1 1 1],'NextPlot','add','View',[180,0]);
-
+ttl = title(axs,'STATUS')
 % Label axes
 xlabel(axs,'x (mm)');
 ylabel(axs,'y (mm)');
@@ -83,7 +83,29 @@ for i = 1:numel(rbData)
     x_i2w(i) = plot3(nan,nan,nan,'.','Color',rand(1,3),'MarkerSize',3);
 end
 
+%% Define common time stamp
+t_sample = [];
+for i = 1:numel(rbData)
+    t_sample = [t_sample, reshape(rbData(i).TimeStamp,1,[])];
+end
+t_sample = unique(t_sample);    % Ordered unique time stamps
+t_round  = round(t_sample,2);   % Rounded to *assumed* 100Hz sample rate
 %% Allow user to specify video filename
 
 
 %% Visualize data
+% Define time stamps for assumed 100Hz sample rate
+t_100Hz = t_sample(1):(1/100):t_sample(end);
+for t = t_100Hz
+    for i = 1:numel(rbData)
+        % Find timestamp index
+        j = find(t == rbData(i).TimeStamp); 
+        % Update plot
+        if isempty(j)
+            set(h_i2w(i),'Visible','off');
+        else
+            set(h_i2w(i),'Visible','on','Matrix',rbData(i).HgTransform{j});
+        end
+    end
+    drawnow
+end
