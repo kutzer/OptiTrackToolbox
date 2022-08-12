@@ -19,6 +19,8 @@
 %   NOTE: This code assumes Data Streaming -> Up Axis -> Y Up in the Motive
 %   Software.
 %
+%   See also SCRIPT_rbDataVisualize_OptiTrack
+%
 %   M. Kutzer 28Nov2017, USNA
 
 % Updates
