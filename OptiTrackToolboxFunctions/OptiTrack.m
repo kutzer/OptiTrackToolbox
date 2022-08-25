@@ -99,6 +99,7 @@ classdef OptiTrack < matlab.mixin.SetGet % Handle
     %               McCorkell, USNA.
     %   07Jan2021 - Documentation update
     %   07Jan2021 - Corrected rb.Tracked to rigidBody(i).isTracked
+    %   25Aug2022 - Updated to check for loopback IP as user input
     
     % --------------------------------------------------------------------
     % General properties
@@ -163,10 +164,16 @@ classdef OptiTrack < matlab.mixin.SetGet % Handle
             if nargin >= 2
                 % Designated host IP
                 hostIP = varargin{1};
-                clientIP = getIPv4('Select IP for OptiTrack Connection');
+                switch hostIP
+                    case '127.0.0.1'
+                        % User is trying to use loopback
+                        clientIP = '127.0.0.1';
+                    otherwise
+                        clientIP = getIPv4('Select Client IP for OptiTrack Connection');
+                end
             else
                 % Local loop-back
-                hostIP = '127.0.0.1';
+                hostIP   = '127.0.0.1';
                 clientIP = '127.0.0.1';
             end
             if nargin >= 3
