@@ -169,6 +169,8 @@ classdef OptiTrack < matlab.mixin.SetGet % Handle
                         % User is trying to use loopback
                         clientIP = '127.0.0.1';
                     otherwise
+                        % Prompt user to specify the client IP from the
+                        % list of available 
                         clientIP = getIPv4('Select Client IP for OptiTrack Connection');
                 end
             else
