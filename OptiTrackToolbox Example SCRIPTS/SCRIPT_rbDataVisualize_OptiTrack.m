@@ -158,6 +158,7 @@ for i = 1:numel(plt)
 end
 
 % Parse & visualize
+figure(fig); % Bring figure to foreground
 for k = 1:numel(t_100Hz)
     t = t_100Hz(k);     % Approximate time
     t0 = t-t_sample(1); % Time relative to initial time
@@ -221,6 +222,7 @@ for i = 1:numel(plt)
 end
 
 % Visualize
+figure(fig); % Bring figure to foreground
 for k = 1:numel(t_100Hz)
     t = t_100Hz(k);     % Approximate time
     t0 = t-t_sample(1); % Time relative to initial time
