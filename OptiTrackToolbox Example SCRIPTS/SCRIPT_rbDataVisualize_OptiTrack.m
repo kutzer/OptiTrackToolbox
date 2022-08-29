@@ -261,6 +261,9 @@ end
 
 %% Internal functions
 % We are using these to interpolate pose data
+%
+% NOTE: Versions of these functions will be and/or are currently added to
+%       the Transformation Toolbox
 
 function v = decoupledSEtoV(H)
 % Map SE to decoupled vector representation
