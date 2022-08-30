@@ -114,6 +114,7 @@ classdef OptiTrack < matlab.mixin.SetGet % Handle
     
     properties(GetAccess='public', SetAccess='public')
         RigidBodySettings   % User specified rigid body settings
+        Debug (1,1) logical = false
     end % end properties
     
     % --------------------------------------------------------------------
@@ -157,7 +158,9 @@ classdef OptiTrack < matlab.mixin.SetGet % Handle
             % Initialize(obj,IP,ConnectionType) initializes an OptiTrack
             % client for a designated Host IP address, and a specified
             % connection type {'Multicast', 'Unicast'}.
-            
+            %
+            % Initialize(obj,IP,ConnectionType,debug)
+            %
             % Check inputs
             %narginchk(1,3);
             cType = 0;  % Default connection type to multicast
@@ -190,7 +193,7 @@ classdef OptiTrack < matlab.mixin.SetGet % Handle
                             'Connection property "%s" not recognized.',varargin{2});
                 end
             end
-            
+
             % Check IP
             % TODO - check for valid IP address
             if ~ischar(hostIP)
@@ -291,7 +294,7 @@ classdef OptiTrack < matlab.mixin.SetGet % Handle
         function rigidBody = get.RigidBody(obj)
             % Get rigid body
             frame = obj.Frame;
-            rigidBody = frame2rigidBody(frame);
+            rigidBody = frame2rigidBody(frame,obj.Debug);
             obj.RigidBody = rigidBody;
         end
         
@@ -308,7 +311,7 @@ classdef OptiTrack < matlab.mixin.SetGet % Handle
     end % end methods
 end % end classdef
 
-function rigidBody = frame2rigidBody(frame)
+function rigidBody = frame2rigidBody(frame,debug)
 % Parse rigid body information from NatNetSDK frame
 n = frame.nRigidBodies;
 rigidBody = [];
@@ -326,7 +329,7 @@ for i = 1:n
     % Tracking status (binary)
     rigidBody(i).isTracked = logical(rb.Tracked);
     % Check if rigid body is tracked
-    if rigidBody(i).isTracked
+    if rigidBody(i).isTracked || debug
         % Update info for tracked bodies
         % -> Native OptiTrack Info
         % Rigid body origin *relative* to the global reference frame
