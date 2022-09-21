@@ -57,7 +57,7 @@ function hg = plotRigidBody(varargin)
 % Upates:
 %   10Mar2016 - Documentation update and added example
 %   10Mar2016 - Empty-set error checking for objects that are not tracked
-
+%   21Sep2022 - Replaced non-visible rigid body warning with an error.
 %% Parse inputs
 narginchk(1,3);
 % Assign output axes (or hgtransform)
@@ -109,6 +109,7 @@ view(axs,3);
 % Define unit sphere surface coordinates
 [X,Y,Z] = sphere(20);
 for i = 1:numel(rigidBody)
+    i
     % Get marker diameter
     mSze = rigidBody(i).MarkerSize;
     % Apply rigid body settings
@@ -122,13 +123,14 @@ for i = 1:numel(rigidBody)
     mPos(4,:) = 1;
     
     if isempty(H)
-        error('OptiTrack:NotVisible',...
+        warning('OptiTrack:NotVisible',...
             ['Rigid Body "%s" is currently not visible.\n',...
-            'Please move rigid body into field of view to continue.'],tag);
-    else
-        mPos = minv(H)*mPos;
+            'Please move rigid body into field of view to visualize.'],tag);
+        hg(i) = hgtransform('Parent',axsOut,'Tag',tag);
+        continue
     end
-    
+    mPos = minv(H)*mPos;
+        
     % Plot markers
     n = numel(mSze);
     for j = 1:n
