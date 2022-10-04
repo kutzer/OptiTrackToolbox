@@ -100,6 +100,7 @@ classdef OptiTrack < matlab.mixin.SetGet % Handle
     %   07Jan2021 - Documentation update
     %   07Jan2021 - Corrected rb.Tracked to rigidBody(i).isTracked
     %   25Aug2022 - Updated to check for loopback IP as user input
+    %   04Oct2022 - Updated *.Initialize documentation
     
     % --------------------------------------------------------------------
     % General properties
@@ -149,21 +150,35 @@ classdef OptiTrack < matlab.mixin.SetGet % Handle
             % NatNet server is set to local loop-back (127.0.0.1) and there
             % is a multicast connection.
             %
-            % Note this is the case if the current instance of MATLAB and
-            % Motive/Arena are running on the same machine.
+            %   obj.Initialize
             %
-            % Initialize(obj,IP) initializes an OptiTrack client for a
-            % designated Host IP address with a multicast connection.
+            %   obj.Initialize(IP)
             %
-            % Initialize(obj,IP,ConnectionType) initializes an OptiTrack
-            % client for a designated Host IP address, and a specified
-            % connection type {'Multicast', 'Unicast'}.
+            %   obj.Initialize(IP,ConnectionType)
             %
-            % Initialize(obj,IP,ConnectionType,debug)
+            %   obj.Initialize(IP,ConnectionType,debug)
             %
+            %   Input(s)
+            %                   IP - character array specifying IP address 
+            %                        for host machine running Motive.
+            %                        Default value is '127.0.0.1' (loopback
+            %                        IP)
+            %       ConnectionType - character array specifying connection
+            %                        type { ['Multicast'], 'Unicast' }
+            %                debug - logical scalar allowing user to enable
+            %                        debug settings { true, [false] }
+            %
+            %   Notes
+            %       (1) When using '127.0.0.1', the current instance of 
+            %           MATLAB and Motive/Arena are running on the same 
+            %           machine.
+            %
+            %   M. Kutzer , 14Jan2016, USNA
+            
             % Check inputs
             %narginchk(1,3);
             cType = 0;  % Default connection type to multicast
+            nargin
             if nargin >= 2
                 % Designated host IP
                 hostIP = varargin{1};
