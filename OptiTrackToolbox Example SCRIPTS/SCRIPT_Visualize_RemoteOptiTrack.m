@@ -1,7 +1,9 @@
 obj = OptiTrack;
 %obj.Initialize('10.60.69.244','unicast');
 %obj.Initialize('10.60.69.244','multicast');
-obj.Initialize('10.24.7.192','unicast');
+
+obj.Initialize('10.24.6.17','unicast');
+%obj.Initialize('10.24.6.0','unicast');
 %obj.Initialize('10.24.7.192','multicast');
 
 %%
