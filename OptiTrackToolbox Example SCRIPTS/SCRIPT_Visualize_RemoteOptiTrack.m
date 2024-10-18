@@ -1,37 +1,88 @@
+%% SCRIPT_Visualize_RemoteOptiTrack
+% This script visualizes data from Motive using either the Unicast or
+% Multicast interface.
+%
+%   M. Kutzer, 08Jan2021, USNA
+
+% Updates
+%   18Oct2024 - Updated documentation and unicast/multicast distinction
+
+%% Create OptiTrack object
 obj = OptiTrack;
-%obj.Initialize('10.60.69.244','unicast');
-%obj.Initialize('10.60.69.244','multicast');
 
-obj.Initialize('10.24.6.17','unicast');
-%obj.Initialize('10.24.6.0','unicast');
-%obj.Initialize('10.24.7.192','multicast');
+%% Initialize
+% Specify unicast or multicast
+%ConnectionType = 'unicast';
+ConnectionType = 'multicast';
 
-%%
-fig = figure;
-axs = axes;
-hold(axs,'on');
-daspect(axs,[1 1 1]);
-view(axs,3);
-
-rigidBody = obj.RigidBody;
-for i = 1:numel(rigidBody)
-    hg(i) = triad('Matrix',rigidBody(i).HgTransform);
+switch ConnectionType
+    case 'unicast'
+        % Option 1:
+        % IP should match the "Local Interface" IP in Motive Data Streaming 
+        % and "Unicast" should be enabled.
+        IP = '10.24.6.17';
+    case 'multicast'
+        % Option 2:
+        IP = '239.255.42.99';   % NatNet Version >  2.0
+        %IP = '224.0.0.1';      % NatNet Version <= 2.0
+    otherwise
+        error('Unexpected connection type.');
 end
 
+% Initialize object
+obj.Initialize(IP,ConnectionType);
+
+%% Initialize figure and axes
+fig = figure('Name','SCRIPT_Visualize_RemoteOptiTrack');
+axs = axes('Parent',fig,'NextPlot','add','DataAspectRatio',[1 1 1]);
+view(axs,3);
+ttl = title(axs,'Initializing...');
+xlabel(axs,'x (mm)');
+ylabel(axs,'y (mm)');
+zlabel(axs,'z (mm)');
+
+%% Animate feed from Motive
+% Initialize empty transform handle array
+h_b2a = hgtransform;
+h_b2a(1) = [];
+
+% Update information from Motive
 while true
+    % Get current rigid body information
+    frameRate = obj.FrameRate;
     rigidBody = obj.RigidBody;
-    for i = 1:numel(rigidBody)
+    nRigidBodies = numel(rigidBody);
+    
+    % Check if figure is still valid
+    if ~ishandle(fig)
+        return
+    end
+
+    % Update title
+    ttl_str = sprintf('%4d Rigid Bodies Tracked',nRigidBodies);
+    if isempty(frameRate)
+        ttl_str = sprintf('%s, Frame Rate: NaN',ttl_str);
+    else
+        ttl_str = sprintf('%s, Frame Rate: %.2f',ttl_str,frameRate);
+    end
+    set(ttl,'String',ttl_str);
+
+    % Update rigid bodies
+    set(h_b2a,'Visible','off');
+    for i = 1:nRigidBodies
+        % Check if figure is still valid
         if ~ishandle(fig)
-            break
+            return
         end
-        if numel(rigidBody) < i
-            hg(i) = triad('Matrix',rigidBody(i).HgTransform);
+        
+        if numel(h_b2a) < i
+            % Add new rigid bodies
+            h_b2a(i) = triad('Parent',axs,'Matrix',rigidBody(i).HgTransform);
         else
-            set(hg(i),'Matrix',rigidBody(i).HgTransform)
+            % Update existing rigid bodies
+            set(h_b2a(i),'Matrix',rigidBody(i).HgTransform,'Visible','on')
         end
-        if numel(hg(i)) > numel(rigidBody)
-            set(hg(i+1:end),'Visible','off');
-        end
+
     end
     drawnow
 end
