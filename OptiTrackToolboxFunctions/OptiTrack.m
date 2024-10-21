@@ -101,6 +101,7 @@ classdef OptiTrack < matlab.mixin.SetGet % Handle
     %   07Jan2021 - Corrected rb.Tracked to rigidBody(i).isTracked
     %   25Aug2022 - Updated to check for loopback IP as user input
     %   04Oct2022 - Updated *.Initialize documentation
+    %   18Oct2024 - Updated *.Initialize documentation
     
     % --------------------------------------------------------------------
     % General properties
@@ -163,6 +164,7 @@ classdef OptiTrack < matlab.mixin.SetGet % Handle
             %                        for host machine running Motive.
             %                        Default value is '127.0.0.1' (loopback
             %                        IP)
+            %                        *See notes below
             %       ConnectionType - character array specifying connection
             %                        type { ['Multicast'], 'Unicast' }
             %                debug - logical scalar allowing user to enable
@@ -170,10 +172,28 @@ classdef OptiTrack < matlab.mixin.SetGet % Handle
             %
             %   Notes
             %       (1) When using '127.0.0.1', the current instance of 
-            %           MATLAB and Motive/Arena are running on the same 
-            %           machine.
+            %           MATLAB and Motive/Arena must be running on the same 
+            %           machine. The "Local Interface" in Motive Data
+            %           Streaming should be set to "Loopback."
+            %
+            %       (2) When using "Multicast," the IP address defining 
+            %           "IP" and the "Multicast Interface" in Motive 
+            %           should be:
+            %               a) 224.0.0.1 with the Data port 1001 for 
+            %                  NatNet 2.0 or below
+            %               b) 239.255.42.99 with the Data port 1511 for
+            %                  newer versions of NatNet*
+            %               * The NatNet distribution installed with the
+            %                 OptiTrack toolbox is 2.7.0
+            %
+            %       (3) When using "Unicast," the IP address defining "IP" 
+            %           and the "Local Interface" in Motive Data Streaming
+            %           should be the same.
             %
             %   M. Kutzer , 14Jan2016, USNA
+            
+            % Updates
+            %   18Oct2024 - Updated documentation
             
             % Check inputs
             narginchk(1,4);

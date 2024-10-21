@@ -21,11 +21,15 @@ function varargout = OptiTrackToolboxVer
 %   07Jan2021 - Corrected client/host IP distinction thanks to Patrick
 %               McCorkell, USNA
 %   07Jan2021 - Updated ToolboxUpdate
+%   07Jan2021 - Corrected rb.Tracked to rigidBody(i).isTracked
+%   25Aug2022 - Updated to check for loopback IP as user input
+%   04Oct2022 - Updated *.Initialize documentation
+%   18Oct2024 - Updated *.Initialize documentation
 
 A.Name = 'OptiTrack Toolbox';
-A.Version = '1.1.2';
+A.Version = '1.1.5';
 A.Release = '(R2019b)';
-A.Date = '07-Jan-2021';
+A.Date = '18-Oct-2024';
 A.URLVer = 1;
 
 msg{1} = sprintf('MATLAB %s Version: %s %s',A.Name, A.Version, A.Release);
