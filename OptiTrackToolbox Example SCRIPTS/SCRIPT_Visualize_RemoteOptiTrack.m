@@ -77,7 +77,8 @@ while true
         
         if numel(h_b2a) < i
             % Add new rigid bodies
-            h_b2a(i) = triad('Parent',axs,'Matrix',rigidBody(i).HgTransform);
+            h_b2a(i) = triad('Parent',axs,...
+                'Matrix',rigidBody(i).HgTransform,'Scale',100,'LineWidth',1.5);
         else
             % Update existing rigid bodies
             set(h_b2a(i),'Matrix',rigidBody(i).HgTransform,'Visible','on')
