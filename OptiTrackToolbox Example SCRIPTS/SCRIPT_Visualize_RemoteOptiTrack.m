@@ -12,8 +12,8 @@ obj = OptiTrack;
 
 %% Initialize
 % Specify unicast or multicast
-%ConnectionType = 'unicast';
-ConnectionType = 'multicast';
+ConnectionType = 'unicast';
+%ConnectionType = 'multicast';
 
 switch ConnectionType
     case 'unicast'
