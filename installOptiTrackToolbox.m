@@ -341,21 +341,36 @@ end
 [ok,msg] = mkdir(tempdir,tmpFolder);
 
 % Download and unzip toolbox (GitHub)
-url = sprintf('https://github.com/kutzer/%sToolbox/archive/master.zip',toolboxName);
-try
-    %fnames = unzip(url,pname);
-    %urlwrite(url,fullfile(pname,tmpFname));
-    tmpFname = sprintf('%sToolbox-master.zip',toolboxName);
-    websave(fullfile(pname,tmpFname),url);
-    fnames = unzip(fullfile(pname,tmpFname),pname);
-    delete(fullfile(pname,tmpFname));
+% UPDATED: 07Sep2021, M. Kutzer
+%url = sprintf('https://github.com/kutzer/%sToolbox/archive/master.zip',toolboxName); <--- Github removed references to "master"
+%url = sprintf('https://github.com/kutzer/%sToolbox/archive/refs/heads/main.zip',toolboxName);
+
+% Check possible branches
+defBranches = {'master','main'};
+for i = 1:numel(defBranches)
+    % Check default branch
+    defBranch = defBranches{i};
+    url = sprintf('https://github.com/kutzer/%sToolbox/archive/refs/heads/%s.zip',...
+        toolboxName,defBranch);
     
-    fprintf('SUCCESS\n');
-    confirm = true;
-catch ME
-    fprintf('FAILED\n');
-    confirm = false;
-    fprintf(2,'ERROR MESSAGE:\n\t%s\n',ME.message);
+    % Download and unzip repository
+    fprintf('Downloading the %s Toolbox ("%s" branch)...',toolboxName,defBranch);
+    try
+        %fnames = unzip(url,pname);
+        %urlwrite(url,fullfile(pname,tmpFname));
+        tmpFname = sprintf('%sToolbox-master.zip',toolboxName);
+        websave(fullfile(pname,tmpFname),url);
+        fnames = unzip(fullfile(pname,tmpFname),pname);
+        delete(fullfile(pname,tmpFname));
+        
+        fprintf('SUCCESS\n');
+        confirm = true;
+        break
+    catch ME
+        fprintf('"%s" branch does not exist\n',defBranch);
+        confirm = false;
+        %fprintf(2,'ERROR MESSAGE:\n\t%s\n',ME.message);
+    end
 end
 
 % Check for successful download
