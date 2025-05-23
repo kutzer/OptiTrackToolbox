@@ -16,9 +16,7 @@ function installOptiTrackToolbox(replaceExisting)
 
 % Updates
 %   07Jan2021 - Updated ToolboxUpdate
-
-% TODO - Allow users to create a local version if admin rights are not
-% possible.
+%   22May2025 - Enable local user installation
 
 %% Define required toolboxes
 requiredToolboxes = {...
@@ -27,10 +25,46 @@ requiredToolboxes = {...
 
 %% Assign tool/toolbox specific parameters
 dirName = 'optitrack';
+toolboxContent  = 'OptiTrackToolboxFunctions';
+toolboxExamples = 'OptiTrackToolbox Example SCRIPTS';
+toolboxName = 'OptiTrack Toolbox';
+toolboxShort = strrep(toolboxName, ' ', '');
+
+%% Define toolbox directory options
+toolboxPathAdmin = fullfile(matlabroot,'toolbox',dirName);
+toolboxPathLocal = fullfile(prefdir,'toolbox',dirName);
+toolboxPathExamples = fullfile(userpath,sprintf('Examples, %s',toolboxName));
+
+%% Check if folders exist
+isPathAdmin = isfolder(toolboxPathAdmin);
+isPathLocal = isfolder(toolboxPathLocal);
+isPathExamples = isfolder(toolboxPathExamples);
+
+%% Check if folders are in the MATLAB path
+allPaths = path;
+allPaths = strsplit(allPaths,pathsep);
+
+inPathAdmin = any(matches(allPaths,toolboxPathAdmin),'all');
+inPathLocal = any(matches(allPaths,toolboxPathLocal),'all');
+inPathExamples = any(matches(allPaths,toolboxPathExamples),'all');
 
 %% Check inputs
-if nargin == 0
+if nargin < 1
     replaceExisting = [];
+end
+if nargin < 2
+    skipAdmin = false;
+end
+
+%% Check for admin write access
+isAdmin = checkWriteAccess(matlabroot);
+isLocal = checkWriteAccess(prefdir);
+isExample = checkWriteAccess(userpath);
+
+%% Check for basic write access
+if ~isLocal
+    warning('No local write access?');
+    return
 end
 
 %% Installation error solution(s)
@@ -42,37 +76,20 @@ adminSolution = sprintf(...
      '\t\t(b) Right click\n',...
      '\t\t(c) Select "Run as administrator"\n']);
 
-%% Check for toolbox directory
-toolboxRoot  = fullfile(matlabroot,'toolbox',dirName);
-isToolbox = exist(toolboxRoot,'file');
-if isToolbox == 7
-    % Apply replaceExisting argument
-    if isempty(replaceExisting)
-        choice = questdlg(sprintf(...
-            ['MATLAB Root already contains the OptiTrack Toolbox.\n',...
-            'Would you like to replace the existing toolbox?']),...
-            'Replace Existing OptiTrack Toolbox','Yes','No','Cancel','Yes');
-    elseif replaceExisting
-        choice = 'Yes';
-    else
-        choice = 'No';
-    end
+%% Prompt user if not an admin
+if ~isAdmin && ~skipAdmin
+    choice = questdlg(sprintf(...
+        ['MATLAB is running without administrative privileges.\n',...
+        'Would you like to install the %s locally?'],toolboxName),...
+        sprintf('Local Install %s',toolboxName),...
+        'Yes','No','Cancel','Yes');
     % Replace existing or cancel installation
     switch choice
         case 'Yes'
-            % TODO - check if NatNet SDK components are running and close
-            % them prior to removing directory
-            rmpath(toolboxRoot);
-            [isRemoved, msg, msgID] = rmdir(toolboxRoot,'s');
-            if isRemoved
-                fprintf('Previous version of OptiTrack Toolbox removed successfully.\n');
-            else
-                fprintf('Failed to remove old OptiTrack Toolbox folder:\n\t"%s"\n',toolboxRoot);
-                fprintf(adminSolution);
-                error(msgID,msg);
-            end
+            skipAdmin = true;
         case 'No'
-            fprintf('OptiTrack Toolbox currently exists, installation cancelled.\n');
+            fprintf('Unable to write perform installation.\n\n');
+            fprintf('To install as an administrator - %s',adminSolution);
             return
         case 'Cancel'
             fprintf('Action cancelled.\n');
@@ -82,41 +99,133 @@ if isToolbox == 7
     end
 end
 
-%% Create OptiTrack Toolbox Path
-[isDir,msg,msgID] = mkdir(toolboxRoot);
-if isDir
-    fprintf('OptiTrack toolbox folder created successfully:\n\t"%s"\n',toolboxRoot);
+%% Check for existing toolbox
+if skipAdmin
+    isToolbox = isPathLocal;
+    toolboxPath = toolboxPathLocal;
 else
-    fprintf('Failed to create OptiTrack Toolbox folder:\n\t"%s"\n',toolboxRoot);
-    fprintf(adminSolution);
-    error(msgID,msg);
+    isToolbox = isPathAdmin;
+    toolboxPath = toolboxPathAdmin;
+end
+
+%% Check for toolbox directory
+if isToolbox
+    % Apply replaceExisting argument
+    if isempty(replaceExisting)
+        choice = questdlg(sprintf(...
+            ['MATLAB path already contains the %s.\n',...
+            'Would you like to replace the existing toolbox?'],toolboxName),...
+            sprintf('Replace Existing %s',toolboxName),...
+            'Yes','No','Cancel','Yes');
+    elseif replaceExisting
+        choice = 'Yes';
+    else
+        choice = 'No';
+    end
+    % Replace existing or cancel installation
+    switch choice
+        case 'Yes'
+            % Remove existing paths
+            removePath(toolboxName,...
+                toolboxPathAdmin,inPathAdmin,isPathAdmin,isAdmin);
+            removePath(toolboxName,...
+                toolboxPathLocal,inPathLocal,isPathLocal,isLocal);
+            removePath(toolboxName,...
+                toolboxPathExamples,inPathExamples,inPathExamples,isExample);
+        case 'No'
+            fprintf('%s currently exists, installation cancelled.\n',toolboxName);
+            return
+        case 'Cancel'
+            fprintf('Action cancelled.\n');
+            return
+        otherwise
+            error('Unexpected response.');
+    end
 end
 
 %% Migrate toolbox folder contents
-toolboxContent = 'OptiTrackToolboxFunctions';
-if ~isdir(toolboxContent)
+% Toolbox contents
+migrateContent(toolboxContent,toolboxPath,toolboxName);
+% Example files
+try
+migrateContent(toolboxExamples,toolboxPathExamples,...
+    sprintf('%s Examples',toolboxName));
+catch
+    fprintf('Unable to migrate examples.');
+end
+
+%% Save toolbox path
+%addpath(genpath(toolboxRoot),'-end');
+addpath(toolboxPath,'-end');
+pathdef_local = fullfile(userpath,'pathdef.m');
+if isAdmin
+    % Delete local pathdef file
+    if isfile(pathdef_local)
+        delete(pathdef_local);
+    end
+    % Save administrator local pathdef file
+    savepath;
+else
+    % Create local user pathdef file
+    fprintf('Updating local user "pathdef.m"...')
+    savepath( pathdef_local );
+    fprintf('[Complete]\n');
+end
+
+%% Rehash toolbox cache
+fprintf('Rehashing Toolbox Cache...');
+rehash TOOLBOXCACHE
+fprintf('[Complete]\n');
+
+%% Install/Update required toolboxes
+for ii = 1:numel(requiredToolboxes)
+    try
+        ToolboxUpdate(requiredToolboxes{ii});
+    catch ME
+        fprintf(2,'[ERROR]\nUnable to install required toolbox: "%s"\n',requiredToolboxes{ii});
+        fprintf(2,'\t%s\n',ME.message);
+    end
+end
+
+%% internal functions (shared workspace)
+% ------------------------------------------------------------------------
+function migrateContent(sourceIn,destination,msg)
+
+% Migrate toolbox folder contents
+if ~isfolder(sourceIn)
     error(sprintf(...
-        ['Change your working directory to the location of "installOptiTrackToolbox.m".\n',...
+        ['Change your working directory to the location of "install%s.m".\n',...
          '\n',...
          'If this problem persists:\n',...
-         '\t(1) Unzip your original download of "OptiTrackToolbox" into a new directory\n',...
+         '\t(1) Unzip your original download of "%s" into a new directory\n',...
          '\t(2) Open a new instance of MATLAB "as administrator"\n',...
          '\t\t(a) Locate MATLAB shortcut\n',...
          '\t\t(b) Right click\n',...
          '\t\t(c) Select "Run as administrator"\n',...
-         '\t(3) Change your "working directory" to the location of "installOptiTrackToolbox.m"\n',...
-         '\t(4) Enter "installOptiTrackToolbox" (without quotes) into the command window\n',...
-         '\t(5) Press Enter.']));
+         '\t(3) Change your "working directory" to the location of "install%s.m"\n',...
+         '\t(4) Enter "install%s" (without quotes) into the command window\n',...
+         '\t(5) Press Enter.'],toolboxShort,toolboxShort,toolboxShort,toolboxShort));
 end
-files = dir(toolboxContent);
-wb = waitbar(0,'Copying OptiTrack Toolbox toolbox contents...');
+
+% Create Toolbox Path
+[isDir,msgDir,msgID] = mkdir(destination);
+if isDir
+    fprintf('%s folder created successfully:\n\t"%s"\n',msg,destination);
+else
+    fprintf('Failed to create %s folder:\n\t"%s"\n',msg,destination);
+    fprintf(adminSolution);
+    error(msgID,msgDir);
+end
+
+% Migrate contents
+files = dir(sourceIn);
+wb = waitbar(0,sprintf('Copying %s contents...',msg));
 n = numel(files);
-fprintf('Copying OptiTrack Toolbox contents:\n');
+fprintf('Copying %s contents:\n',msg);
 for i = 1:n
     % source file location
-    source = fullfile(toolboxContent,files(i).name);
-    % destination location
-    destination = toolboxRoot;
+    source = fullfile(sourceIn,files(i).name);
+    
     if files(i).isdir
         switch files(i).name
             case '.'
@@ -163,36 +272,56 @@ for i = 1:n
     waitbar(i/n,wb);
 end
 set(wb,'Visible','off');
+delete(wb);
 
-%% Save toolbox path
-%addpath(genpath(toolboxRoot),'-end');
-addpath(toolboxRoot,'-end');
-savepath;
+end
 
-%% Rehash toolbox cache
-fprintf('Rehashing Toolbox Cache...');
-rehash TOOLBOXCACHE
-fprintf('[Complete]\n');
+end
 
-%% Install/Update required toolboxes
-for i = 1:numel(requiredToolboxes)
-    try
-        ToolboxUpdate(requiredToolboxes{i});
-    catch ME
-        fprintf(2,'[ERROR]\nUnable to install required toolbox: "%s"\n',requiredToolboxes{i});
-        fprintf(2,'\t%s\n',ME.message);
+%% Internal functions (unique workspace)
+% ------------------------------------------------------------------------
+function tfWrite = checkWriteAccess(pname)
+
+tmpFname = fullfile(pname,'tmp.txt');
+tmpHndle = fopen(tmpFname, 'w');
+if tmpHndle < 0
+    tfWrite = false;
+else
+    tfWrite = true;
+    fclose(tmpHndle);
+    delete(tmpFname);
+end
+
+end
+% ------------------------------------------------------------------------
+function removePath(toolboxName,pName,inPath,isPath,isDelete)
+% Remove path
+if inPath
+    rmpath(pName);
+end
+% Remove folder
+if isPath && isDelete
+    [isRemoved, msg, msgID] = rmdir(pName,'s');
+    if isRemoved
+        fprintf('Previous version of %s removed successfully:\n\t"%s"\n',toolboxName,pName);
+    else
+        fprintf('Failed to remove old %s folder:\n\t"%s"\n',toolboxName,pName);
+        %fprintf(adminSolution);
+        error(msgID,msg);
     end
+elseif ~isDelete
+    fprintf('Skipping removal of old %s folder:\n\t"%s"\n',toolboxName,pName);
 end
 
 end
-
+% ------------------------------------------------------------------------
 function ToolboxUpdate(toolboxName)
 
-%% Setup functions
+% Setup functions
 ToolboxVer = str2func( sprintf('%sToolboxVer',toolboxName) );
 installToolbox = str2func( sprintf('install%sToolbox',toolboxName) );
 
-%% Check current version
+% Check current version
 try
     A = ToolboxVer;
 catch ME
@@ -200,7 +329,7 @@ catch ME
     fprintf('No previous version of %s detected.\n',toolboxName);
 end
 
-%% Setup temporary file directory
+% Setup temporary file directory
 fprintf('Downloading the %s Toolbox...',toolboxName);
 tmpFolder = sprintf('%sToolbox',toolboxName);
 pname = fullfile(tempdir,tmpFolder);
@@ -211,7 +340,7 @@ end
 % Create new directory
 [ok,msg] = mkdir(tempdir,tmpFolder);
 
-%% Download and unzip toolbox (GitHub)
+% Download and unzip toolbox (GitHub)
 url = sprintf('https://github.com/kutzer/%sToolbox/archive/master.zip',toolboxName);
 try
     %fnames = unzip(url,pname);
@@ -229,7 +358,7 @@ catch ME
     fprintf(2,'ERROR MESSAGE:\n\t%s\n',ME.message);
 end
 
-%% Check for successful download
+% Check for successful download
 alternativeInstallMsg = [...
     sprintf('Manually download the %s Toolbox using the following link:\n',toolboxName),...
     newline,...
@@ -249,28 +378,39 @@ if ~confirm
     return
 end
 
-%% Find base directory
+% Find base directory
 install_pos = strfind(fnames, sprintf('install%sToolbox.m',toolboxName) );
 sIdx = cell2mat( install_pos );
 cIdx = ~cell2mat( cellfun(@isempty,install_pos,'UniformOutput',0) );
 
 pname_star = fnames{cIdx}(1:sIdx-1);
 
-%% Get current directory and temporarily change path
+% Get current directory and temporarily change path
 cpath = cd;
 cd(pname_star);
 
-%% Install Toolbox
-installToolbox(true);
+% Check for admin
+skipAdmin = ~checkWriteAccess(matlabroot);
 
-%% Move back to current directory and remove temp file
+% Install Toolbox
+% TODO - consider providing the user with an option or more information
+%        related to "skipAdmin"
+try
+    installToolbox(true,skipAdmin);
+catch ME
+    cd(cpath);
+    throw(ME);
+end
+
+% Move back to current directory and remove temp file
 cd(cpath);
 [ok,msg] = rmdir(pname,'s');
 if ~ok
     warning('Unable to remove temporary download folder. %s',msg);
 end
 
-%% Complete installation
+% Complete installation
 fprintf('Installation complete.\n');
 
 end
+
