@@ -331,7 +331,7 @@ catch ME
 end
 
 % Setup temporary file directory
-fprintf('Downloading the %s Toolbox...',toolboxName);
+%fprintf('Downloading the %s Toolbox...',toolboxName);
 tmpFolder = sprintf('%sToolbox',toolboxName);
 pname = fullfile(tempdir,tmpFolder);
 if isfolder(pname)
