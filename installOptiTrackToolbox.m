@@ -1,4 +1,4 @@
-function installOptiTrackToolbox(replaceExisting)
+function installOptiTrackToolbox(replaceExisting,skipAdmin)
 % INSTALLOPTITRACKTOOLBOX installs OptiTrack Toolbox for MATLAB.
 %   INSTALLOPTITRACKTOOLBOX installs OptiTrack Toolbox into the following 
 %   locations:
