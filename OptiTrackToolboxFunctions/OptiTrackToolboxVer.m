@@ -25,11 +25,12 @@ function varargout = OptiTrackToolboxVer
 %   25Aug2022 - Updated to check for loopback IP as user input
 %   04Oct2022 - Updated *.Initialize documentation
 %   18Oct2024 - Updated *.Initialize documentation
+%   22May2025 - Updated for local user install
 
 A.Name = 'OptiTrack Toolbox';
-A.Version = '1.1.5';
+A.Version = '1.1.6';
 A.Release = '(R2019b)';
-A.Date = '18-Oct-2024';
+A.Date = '23-May-2025';
 A.URLVer = 1;
 
 msg{1} = sprintf('MATLAB %s Version: %s %s',A.Name, A.Version, A.Release);
